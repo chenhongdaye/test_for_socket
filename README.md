@@ -21,3 +21,5 @@ the message send to the id which is not online for now ,server save it in anothe
 there is also a file ,which saves all users who online now ,which is update when an user is become online;
 在线用户信息文件:保存着当前在线的所有用户id,Addr地址,服务器相应的socket(用于其他线程发送信息时使用);当发送给在线人信息时,通过此映射,找到地址,发送;
 
+
+!!!!!!!!!!!!!!!!!attention: 往user文件写id和密码时候,严格按照 struct user写;
