@@ -10,11 +10,16 @@
 #include<string.h>
 #include<stdlib.h> //exit()
 #include<time.h> //time_t
+
+
 #define ID_LEN 10;
 #define MES_LEN 50;
 #define KEY_LEN 10;
-
-
+#define SERVER_IP "....."
+#define SERVER_PORT ..... //短整形
+#define ONLINE "....."
+#define OFFLINE "....."
+#define USRS "....."
 
 
 struct message //发送的消息or离线文件
@@ -36,6 +41,10 @@ struct users //用户信息 用户名和密码
   char key[KEY_LEN];
 };
 
+struct message string_op(char *input) ////////////待 从发送消息分离出 信息
+{
+  return ....;
+}
 
 
 
