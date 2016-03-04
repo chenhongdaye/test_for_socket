@@ -120,10 +120,14 @@ int main(void)
     
     //创建线程  负责此连接的通信;
     pthread_t thread;///////////////////////////////////////////////////////////////////未;
-    if(pthread_create(&thread,,)==-1)
+    thread_argu argu;
+    argu.
+    if(pthread_create(&thread,NULL,(void*)(&connet_handle),(void*)(&argu))==-1)
     {
-      
+      puts(" thread fail \n");
+      exit(1);
     }
+    pthread_detach(thread);
     
   }
   
@@ -144,6 +148,69 @@ int main(void)
         exit(1);
       }
       pthread_mutex_unlock(mutex);
+      char a[MES_LEN],b[MES_LEN];
+      char *c="logout";
+      memcpy(a,c,6);
+      memcpy(b,mesage.mesage,6);
+      if(strcmp(a,b)==0)
+      {
+        //用户下线消息;/////发送下线通知
+        FILE * file_out;
+        if((file_out=fopen(ONLINE,"r+"))==NULL) //读写方式打开
+        {
+          //int label=0;
+          //int local=0;
+          int label2=0;
+          rewind(file_out);
+          struct online temp;
+          struct online save[10]; //存放用户信息
+          while(fread((void*)(&temp),sizeof(struct online),1,file_out)==1)//未找到更好地方式更新文件;此处:全部读取然后覆盖;
+          {
+            //++label;
+            ++label2;
+            *(save+labe2-1)=temp;
+            if(strcmp(id_from,temp.id)==0)
+            {
+              --label2;   //下次会覆盖;
+              //local=labe2+1; //记录 位置;
+            }
+          }
+          int count=label2+1;
+          fclose(file_out);
+          FILE* file_out2;
+          if((file_out2=fopen(ONLINE,"w+"))==NULL) //此方式打开,原文件全部清空;
+          {
+            if(fwrite((void*)(&save[i]),sizeof(),count,file_out2)<count)
+            {
+              puts("there is sth wrong!!!更新文件!!!2222222222222\n");
+              exit(1);
+            }
+          }
+          fclose(file_out2);
+        }
+        close(sockfd);
+        FILE *out_message;
+        if((out_message=fopen(ONLINE,"r"))==NULL)
+        {
+          puts(" 这里毛病ksjdhgkjsdh \n");
+          exit(1);
+        }
+        struct online send_to;
+        while(fread((void*)(send_to),sizeof(struct online),1,out_message)==1)
+        {
+          struct message message_to;
+          char *say="已下线\n";
+          strcpy(message_to.message,say,sizeof(say)/sizeof(char));
+          message_to.time=time(NULL);
+          if(send(message_to.sockfd,(void*)(message_to),sizeof(struct message),0)==-1)
+          {
+            puts(" 发不出去了\n");
+            exit(1);
+          }
+        }
+        fclose(out_message);
+        pthread_exit(0);
+      }
       char id_to[ID_LEN];
       memcpy(id_to,message.id,MES_LEN*sizeof(char));///发往的用户  用于在线文件中检索 socket和 thread
       memcpy(message.id,id_from,MES_LEN);  ///只需要改动接收到信息的 id部分;
