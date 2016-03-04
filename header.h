@@ -23,19 +23,20 @@
 #define OFFLINE "....."
 #define USRS "....."
 
-
 struct message //发送的消息or离线文件  相应的ID 为接收或者发送;
 {
   char id[ID_LEN]; //最长10
   char message[MES_LEN]; //最长50
   time_t time;
 };
+typedef struct message login;
 
 struct online //在线文件夹
 {
   char id[ID_LEN];
   int sockfd;
   pthread_mutex_t mutex; //新增加, 用于保证发送消息原子性;
+  //int label;
 };
 typedef struct online thread_argu;
 /*
@@ -54,7 +55,11 @@ struct users //用户信息 用户名和密码
   char key[KEY_LEN];
 };
 
-typedef struct message login;
+struct thread_argu
+{
+  int sockfd;
+  pthread_mutex_t mutex;
+};
 
 login string_op_login(char *string)  //从登录信息分离出消息
 {
