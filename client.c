@@ -11,7 +11,7 @@ int main(void)
   server.sin_addr.s_addr=inet_addr(SERVER_IP);
   server.sin_port=atons(SERVER_PORT);
   if((socketfd=socket(AF_INET,SOCK_STREAM,0))==-1)
-  {
+  
     puts("shit there is sth 1111 \n");
     exit(1);
   }
@@ -82,6 +82,11 @@ int main(void)
     if(input=="logout")
     {
       /////////////////////////////////////////////////////////////////////////////未
+      struct message logout;
+      char *str="logout";
+      memcpy(logout.message,str,MES_LEN*sizeof(char));  // 结构的其他部分未定义;
+      close(socketfd);
+      puts("程序结束\n ");
       break;
     }
     buf.time=time(NULL);
