@@ -86,9 +86,10 @@ int main(void)
     }
     buf.time=time(NULL);
     pthread_mutex_lock(mutex);
-    if(send(socketfd,(void*)buf,MES_LEN,0)==-1)
+    if(send(socketfd,(void*)(&buf),MES_LEN,0)==-1)
     {
       puts("send failed \n");
+      exit(1);
     }
     pthread_mutex_unlock(mutex);
     puts("\n发送成功\n 请输入:\n");
