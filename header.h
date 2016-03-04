@@ -37,7 +37,8 @@ struct online //在线文件夹
   int sockfd;
   pthread_mutex_t mutex; //新增加, 用于保证发送消息原子性;
 };
-
+typedef struct online thread_argu;
+/*
 struct send //用于 传递给服务器中 线程的参数
 {
   int sockfd;
@@ -45,6 +46,7 @@ struct send //用于 传递给服务器中 线程的参数
   char id_from[ID_LEN]; //当前id
   char id_to[ID_LEN]; 
 };
+*/
 
 struct users //用户信息 用户名和密码
 {
@@ -52,7 +54,7 @@ struct users //用户信息 用户名和密码
   char key[KEY_LEN];
 };
 
-typedef struct users login;
+typedef struct message login;
 
 login string_op_login(char *string)  //从登录信息分离出消息
 {
