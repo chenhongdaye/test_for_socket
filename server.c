@@ -79,12 +79,66 @@ int main(void)
       }
     }
     close(file_usr);
-    if(succ==0)/////////////////////////////////////////////////////////////改.......................
+    if(succ==0)
     {//表明登录信息 错误
       struct message fail;
       fail.id[0]='0';
       send(new_sockfd,(void*)(&fail),sizeof(struct message));
       goto label1;
+    }
+    
+    //查看是否有离线消息;
+    FILE* offline_mes;
+    if((offline_mes=fopen(OFFLINE,"r"))==NULL)  //当有离线消息时, 关闭此文件,以 w+方式重新打开,删除离线消息;
+    {
+      puts(" 打开 离线文件失败! \n");
+      exit(1);
+    }
+    struct message off;  //与compare 做比较
+    int label_find=0;
+    int count=0;
+    struct message *temp=(struct message*)malloc(10*sizeof(struct message));//有必要在离线文件写入离线消息数;这假定最多10条;
+    while(fread((void*)(&off),sizeof(struct message),1,offline_mes)==1)
+    {
+      ++count;
+      memcpy(temp+count-1,&off,sizeof(struct message));
+      if(strcmp(off.id,compare.id)==0)
+      {
+        label_find=1;
+        --count;
+        //break;
+      }
+      
+    }
+    fclose(offline_mes);
+    if(label_find==0)
+    {
+      ////nothing;
+      free(temp);
+    }
+    else
+    {
+      ///采用相应的消息格式
+      if(send(new_sockfd,(void*)(&off),sizeof(struct message),0)==-1)
+      {
+        puts("shit thrtresrsers\n");
+        exit(1);
+      }
+      FILE * update_off;
+      if((update_off=fopen(OFFLINE,"w+"))==NULL)
+      {
+        rewind(update_off);
+        //for(int i=0;i<count;++i)
+        //{
+        if(fwrite((void*)(temp+i),sizeof(struct message),count,update_off)!=count)
+        {
+          puts("shitshitshit111111111\n");
+          exit(1);
+        }
+        //}
+        fclose(update_off);
+        free(temp);
+      }
     }
     
     // only if succ==1 才执行以后的.
@@ -123,7 +177,7 @@ int main(void)
     fclose(file_online);
     
     //创建线程  负责此连接的通信;
-    pthread_t thread;///////////////////////////////////////////////////////////////////未;
+    pthread_t thread;
     thread_argu argu;
     argu.
     if(pthread_create(&thread,NULL,(void*)(&connet_handle),(void*)(&argu))==-1)
@@ -224,7 +278,7 @@ void connect_handle(thread_argu temp) ///////此处传递形参  用于线程
     
     char id_to[ID_LEN];
     memcpy(id_to,message.id,MES_LEN*sizeof(char));///发往的用户  用于在线文件中检索 socket和 thread
-    memcpy(message.id,id_from,MES_LEN);  ///只需要改动接收到信息的 id部分;
+    //memcpy(message.id,id_from,MES_LEN);  ///只需要改动接收到信息的 id部分;  如果在线则改;
     if((file_online=fopen(ONLINE,"r"))==NULL)
     {
       puts(" 打开文件失败 \n");
@@ -250,6 +304,7 @@ void connect_handle(thread_argu temp) ///////此处传递形参  用于线程
     if(label==1) //在线发送;
     {
       pthread_mutex_lock(mutex);
+      strncpy(message.id,id_from,MES_LEN);  ///只需要改动接收到信息的 id部分; 
       if(send(sockfd,(void*)(&message),sizeof(struct message),0)==-1)
       {
         puts(" failed !\n");
@@ -260,8 +315,10 @@ void connect_handle(thread_argu temp) ///////此处传递形参  用于线程
       
     else  //离线 写入离线文件;
     {
+      char *a="\nfrom:";
+      char *b=strcat(a,message.id);
+      strncpy(message.message+(MES_LEN-ID_LEN-(strlen(a))),b,strlen(b));
       FILE *offline;
-      /////////////////////////////////////////////////////////////////未实现上线接收离线消息;
       if((offline=fopen(OFFLINE,"a+"))==NULL)   //更新离线消息文件
       {
         puts(" open file failed! \n");
