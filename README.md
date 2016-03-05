@@ -30,4 +30,4 @@ there is also a file ,which saves all users who online now ,which is update when
 !!!!!!!!!!!!!!!!!attention!! 每个线程内的,存在同时使用某一个socket的情况(下线消息和普通消息同时发送),所以为保证(给某一client)发送消息的原子性 , 有必要给各个socket加锁 ,但这些锁是需要各个线程共用的 ,解决方式: 在线文件中,信息的格式改变一下 ,在原先的结构上, 增加一个 pthread_mutex_t 的成员 ;
 .............................此步骤
 
-
+可移植性,message中需要加.....未用属性;
