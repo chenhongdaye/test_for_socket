@@ -66,15 +66,30 @@ login string_op_login(char *string)  //从登录信息分离出消息
   return ....;
 }
 
-struct message string_op(char *input) ////////////待 从发送消息分离出 信息
+struct message string_op(char *input) ///////从发送消息分离出 信息
 {
-  return ....;
+  struct message return_mes;
+  int count=strlen(input);
+  int label=0;
+  for(int i=0;i<count;++i)
+  {
+    if(*(input+i)==':')
+    {
+      label=i;
+      break;
+    }
+  }
+  strncpy(return_mes.id,input,label);
+  strncpy(return_mes.message,input+label+1,count-label-1);
+  return return_mes;  //时间在别处添加;
 }
 
-int init_user_file(char filename)
+int init_user_file()
 {
-  filename=USRS;
-  //.........................
+  char *filename=USRS;
+  //int count=10;
+  struct users;
+  return (?:);
 }
 
 
