@@ -231,7 +231,7 @@ void connect_handle(thread_argu temp) ///////此处传递形参  用于线程
         {
           //++label;
           ++label2;
-          *(save+labe2-1)=temp;
+          memcpy(save+labe2-1,temp,sizeof(struct message));
           if(strcmp(id_from,temp.id)==0)
           {
             --label2;   //下次会覆盖;
@@ -243,11 +243,13 @@ void connect_handle(thread_argu temp) ///////此处传递形参  用于线程
         FILE* file_out2;
         if((file_out2=fopen(ONLINE,"w+"))==NULL) //此方式打开,原文件全部清空;
         {
-          if(fwrite((void*)(&save[i]),sizeof(),count,file_out2)<count)
-          {
-            puts("there is sth wrong!!!更新文件!!!2222222222222\n");
-            exit(1);
-          }
+          puts(" 大开文件失败！\n");
+          exit(1);
+        }
+        if(fwrite((void*)(&save[i]),sizeof(struct online),count,file_out2)<count)
+        {
+          puts("there is sth wrong!!!更新文件!!!2222222222222\n");
+          exit(1);
         }
         fclose(file_out2);
       }
