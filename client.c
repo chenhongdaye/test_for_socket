@@ -35,15 +35,16 @@ int main(void)
     exit(1);
   }
   
-  int success=0;
-  if(recv(socketfd,(void*)(&success),sizeof(int))==-1)
+  struct message success;
+  //约定: 服务器校验用户密码失败,返回 *(message.id)==1;否则*(message.id)=0;
+  if(recv(socketfd,(void*)(&success),sizeof(struct message))==-1)
   {
     puts(" shit recv failed \n");
     exit(1);
   }
-  char *output=((int)success==1?"登录成功! \n":"账户/密码错误,请重新输入!\n");
+  char *output=(success.id[0]=='1'?"登录成功! \n":"账户/密码错误,请重新输入!\n");
   puts(output);
-  if(success==0)
+  if(success.id[0]=='0')
     goto label1;
   
   /*  未实现  发送全部在线人消息.
